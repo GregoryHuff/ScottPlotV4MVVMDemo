@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35013.160
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScottPlotV4MVVMDemo", "ScottPlotV4MVVMDemo.csproj", "{D47F951B-FE03-4DFF-B32A-95174531DB40}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D47F951B-FE03-4DFF-B32A-95174531DB40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D47F951B-FE03-4DFF-B32A-95174531DB40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D47F951B-FE03-4DFF-B32A-95174531DB40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D47F951B-FE03-4DFF-B32A-95174531DB40}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {780162D6-1CBD-46C7-A914-442CD5F93967}
+	EndGlobalSection
+EndGlobal
