@@ -2,7 +2,7 @@
 using System.Data;
 using System.Windows;
 
-namespace ScottPlotV4MVVMDemo
+namespace ScottPlotV5MVVMDemo
 {
     /// <summary>
     /// Interaction logic for App.xaml

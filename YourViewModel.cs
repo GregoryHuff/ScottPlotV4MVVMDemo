@@ -1,65 +1,74 @@
 ﻿using System;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Threading;
-using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace ScottPlotV4MVVMDemo
+namespace ScottPlotV5MVVMDemo
 {
-    public partial class YourViewModel : ObservableValidator
+    public partial class YourViewModel : INotifyPropertyChanged
     {
-        [ObservableProperty]
-        private Point _extents = new Point(640, 65535);
-        private const int maxIterations = 5000;
-        private int _iterationCount = 0;
+        private readonly DispatcherTimer timer;
+        private readonly Stopwatch stopwatch = new();
 
-        [ObservableProperty]
-        private ObservableCollection<Point> _points = new ObservableCollection<Point>();
+        private double[] values;
+        public double[] Values
+        {
+            get => values;
+            set
+            {
+                values = value;
+                OnPropertyChanged();
+            }
+        }
 
-        private DispatcherTimer _timer;
-        private readonly Random _random = new Random();
-        private readonly Stopwatch _stopwatch = new Stopwatch();
+        private double[] moreValues;
+        public double[] MoreValues
+        {
+            get => moreValues;
+            set
+            {
+                moreValues = value;
+                OnPropertyChanged();
+            }
+        }
 
         public YourViewModel()
         {
-            InitializeTimer();
-        }
-
-        private void InitializeTimer()
-        {
-            _timer = new DispatcherTimer
+            values = new double[25];
+            moreValues = new double[25];
+            timer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromMilliseconds(1000 / 100) // 100 Hz
+                Interval = TimeSpan.FromMilliseconds(100)
             };
-            _timer.Tick += TimerTick;
-            _timer.Start();
+            timer.Tick += Timer_Tick;
+            timer.Start();
+            stopwatch.Start();
         }
 
-        private void TimerTick(object? sender, EventArgs e)
+        private void Timer_Tick(object? sender, EventArgs e)
         {
-            _stopwatch.Restart();
-            RandomPoints();
-            _stopwatch.Stop();
-            double renderTime = _stopwatch.Elapsed.TotalMilliseconds;
-            double fps = 1000 / renderTime;
-            Trace.WriteLine($"Frame rendered in {renderTime} ms ({fps:F2} FPS)");
-            _iterationCount++;
-            if (_iterationCount >= maxIterations)
-            {
-                _timer.Stop();
-                Trace.WriteLine("DONE");
-            }
+            double phase = stopwatch.Elapsed.TotalSeconds;
+            double multiplier = 2 * Math.PI / Values.Length;
+            //update values
+            for (int i = 0; i < Values.Length; i++)
+                Values[i] = Math.Sin(i * multiplier + phase);
+            //and more values
+            for (int i = 0; i < MoreValues.Length; i++)
+                MoreValues[i] = Math.Cos(i * multiplier + phase);
+
+            OnPropertyChanged(nameof(Values));
         }
 
-        private void RandomPoints()
+        public event PropertyChangedEventHandler? PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
-            Points.Clear();
-            for (int i = 0; i < 640; i++)
-            {
-                ushort val = (ushort)_random.Next(0, 65535);
-                Points.Add(new Point(i, val));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
+
+
+
 }

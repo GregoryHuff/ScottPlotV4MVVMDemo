@@ -1,7 +1,7 @@
-﻿<Application x:Class="ScottPlotV4MVVMDemo.App"
+﻿<Application x:Class="ScottPlotV5MVVMDemo.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="clr-namespace:ScottPlotV4MVVMDemo"
+             xmlns:local="clr-namespace:ScottPlotV5MVVMDemo"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
          

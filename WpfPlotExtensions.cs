@@ -1,5 +1,7 @@
 ﻿using ScottPlot;
 using ScottPlot.Plottable;
+using ScottPlot.Plottables;
+using ScottPlot.WPF;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,160 +10,222 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
+using System.Windows.Threading;
 
-namespace ScottPlotV4MVVMDemo
+namespace ScottPlotV5MVVMDemo
 {
-    public static class WpfPlotExtensions
+    //public static class ScottPlotMVVMExtension
+    //{
+    //    private const int DefaultFrameRate = 10;
+    //    public static readonly DependencyProperty TitleProperty =
+    //        DependencyProperty.RegisterAttached(
+    //            "Title",
+    //            typeof(string),
+    //            typeof(ScottPlotMVVMExtension),
+    //            new PropertyMetadata("MVVM Plot", TitleChanged));
+
+    //    private static void TitleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    //    {
+    //        if (d is WpfPlot plot)
+    //        {
+    //            _staticPlot = plot; //I guess?
+    //            string title = (string)e.NewValue;
+    //            //_staticPlot ??= new WpfPlot();
+    //            _staticPlot.Plot.Title(title);
+    //        }
+    //    }
+
+    //    public static void SetTitle(WpfPlot element, string title)
+    //    {
+    //        element.SetValue(TitleProperty, title);
+    //    }
+    //    public static string GetTitle(WpfPlot element, string title)
+    //    {
+    //        string? _title = element.GetValue(TitleProperty) as string;
+    //        _title ??= "MVVM Plot";
+    //        return _title;
+    //    }
+
+    //    public static readonly DependencyProperty FrameRateProperty =
+    //        DependencyProperty.RegisterAttached(
+    //            "FrameRate",
+    //            typeof(int),
+    //            typeof(ScottPlotMVVMExtension),
+    //            new PropertyMetadata(DefaultFrameRate, FrameRateChanged)); // Default to 30 FPS
+
+    //    public static void SetFrameRate(WpfPlot element, int value)
+    //    {
+    //        element.SetValue(FrameRateProperty, value);
+    //    }
+
+    //    public static int GetFrameRate(WpfPlot element)
+    //    {
+    //        return (int)element.GetValue(FrameRateProperty);
+    //    }
+
+    //    private static DispatcherTimer? _refreshTimer;
+    //    private static TimeSpan _maxUpdateInterval = TimeSpan.FromSeconds(1.0 / DefaultFrameRate); 
+    //    private static WpfPlot? _staticPlot = new WpfPlot();
+    //    private static Signal? signalPlot;
+
+    //    static ScottPlotMVVMExtension()
+    //    {
+    //        _refreshTimer = new DispatcherTimer
+    //        {
+    //            Interval = _maxUpdateInterval
+    //        };
+    //        _refreshTimer.Tick += (s, e) =>
+    //        {
+    //            _staticPlot?.Refresh();
+    //        };
+    //        _refreshTimer.Start();
+    //    }
+
+    //    private static void FrameRateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    //    {
+    //        if (d is WpfPlot plot)
+    //        {
+    //            _maxUpdateInterval = TimeSpan.FromSeconds(1.0 / (int)e.NewValue);
+    //            if (_refreshTimer != null)
+    //            {
+    //                _refreshTimer.Interval = _maxUpdateInterval;
+    //            }
+    //        }
+    //    }
+
+    //    public static readonly DependencyProperty ItemsSourceProperty =
+    //        DependencyProperty.RegisterAttached(
+    //            "ItemsSource",
+    //            typeof(IEnumerable),
+    //            typeof(ScottPlotMVVMExtension),
+    //            new PropertyMetadata(OnItemsSourceChanged));
+
+    //    public static void SetItemsSource(WpfPlot element, IEnumerable value)
+    //    {
+    //        element.SetValue(ItemsSourceProperty, value);
+    //    }
+
+    //    public static IEnumerable GetItemsSource(WpfPlot element)
+    //    {
+    //        return (IEnumerable)element.GetValue(ItemsSourceProperty);
+    //    }
+
+    //    private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    //    {
+    //        if (d is WpfPlot plot)
+    //        {
+    //            _staticPlot = plot;
+    //            if (e.NewValue is double[] newValues)
+    //            {
+    //                //_staticPlot ??= new WpfPlot();
+    //                _staticPlot.Plot.Clear();
+    //                signalPlot = plot.Plot.Add.Signal(newValues);
+    //                plot.Refresh();
+    //            }
+    //        }
+    //    }
+    //}
+
+
+    ///GPT:
+    public static class ScottPlotMVVMExtension
     {
+        private const int defaultFrameRate = 30;
+
+        public static readonly DependencyProperty TitleProperty =
+            DependencyProperty.RegisterAttached(
+                "Title",
+                typeof(string),
+                typeof(ScottPlotMVVMExtension),
+                new PropertyMetadata("MVVM Plot", TitleChanged));
+
+        private static void TitleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is WpfPlot plot)
+            {
+                string title = (string)e.NewValue;
+                plot.Plot.Title(title);
+                plot.Refresh();
+            }
+        }
+
+        public static void SetTitle(WpfPlot element, string title)
+        {
+            element.SetValue(TitleProperty, title);
+        }
+
+        public static string GetTitle(WpfPlot element)
+        {
+            return (string)element.GetValue(TitleProperty);
+        }
+
+        public static readonly DependencyProperty FrameRateProperty =
+            DependencyProperty.RegisterAttached(
+                "FrameRate",
+                typeof(int),
+                typeof(ScottPlotMVVMExtension),
+                new PropertyMetadata(defaultFrameRate, FrameRateChanged));
+
+        public static void SetFrameRate(WpfPlot element, int value)
+        {
+            element.SetValue(FrameRateProperty, value);
+        }
+
+        public static int GetFrameRate(WpfPlot element)
+        {
+            return (int)element.GetValue(FrameRateProperty);
+        }
+
+        private static void FrameRateChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is WpfPlot plot)
+            {
+                int frameRate = (int)e.NewValue;
+                TimeSpan interval = TimeSpan.FromSeconds(1.0 / frameRate);
+
+                if (plot.Tag is DispatcherTimer timer)
+                {
+                    timer.Interval = interval;
+                }
+                else
+                {
+                    timer = new DispatcherTimer { Interval = interval };
+                    timer.Tick += (s, args) => plot.Refresh();
+                    timer.Start();
+                    plot.Tag = timer;
+                }
+            }
+        }
+
         public static readonly DependencyProperty ItemsSourceProperty =
             DependencyProperty.RegisterAttached(
                 "ItemsSource",
                 typeof(IEnumerable),
-                typeof(WpfPlotExtensions),
-                new PropertyMetadata(OnItemsSourceChanged)
-            );
+                typeof(ScottPlotMVVMExtension),
+                new PropertyMetadata(OnItemsSourceChanged));
 
-        public static readonly DependencyProperty ExtentsProperty =
-            DependencyProperty.RegisterAttached(
-                "Extents",
-                typeof(Point),
-                typeof(WpfPlotExtensions),
-                new PropertyMetadata(OnExtentsChanged)
-            );
-
-        private static WpfPlot? _staticPlot;
-        private static readonly List<Point> _points = new();
-        private static int _numPoints;
-        private static ScatterPlot? _thePlot;
-
-        private static readonly Stopwatch _stopwatch = new Stopwatch();
-
-        public static void SetItemsSource(WpfPlot element, ObservableCollection<Point> value)
+        public static void SetItemsSource(WpfPlot element, IEnumerable value)
         {
-            Trace.WriteLine("SetItemsSource");
             element.SetValue(ItemsSourceProperty, value);
         }
 
         public static IEnumerable GetItemsSource(WpfPlot element)
         {
-            Trace.WriteLine("GetItemsSource");
-            return (ObservableCollection<Point>)element.GetValue(ItemsSourceProperty);
-        }
-
-        private static void Value_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
-        {
-            if (e.NewItems == null) return;
-
-            foreach (Point point in e.NewItems)
-            {
-                if (point.X == 0)
-                {
-                    _points.Clear();
-                }
-                _points.Add(point);
-                if (_points.Count == 640)
-                {
-                    _stopwatch.Restart();
-                    UpdatePlot();
-                    _stopwatch.Stop();
-                    double renderTime = _stopwatch.Elapsed.TotalMilliseconds;
-                    double fps = 1000 / renderTime;
-                    Trace.WriteLine($"Plot updated in {renderTime} ms ({fps:F2} FPS)");
-                }
-            }
+            return (IEnumerable)element.GetValue(ItemsSourceProperty);
         }
 
         private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is not WpfPlot plot) return;
-
-            _staticPlot = plot;
-
-            if (e.OldValue is ObservableCollection<Point> oldCollection)
+            if (d is WpfPlot plot)
             {
-                oldCollection.CollectionChanged -= Value_CollectionChanged;
-                if (oldCollection.Count == 0)
-                    PreparePlot();
-                
-            }
-            else
-            {
-                PreparePlot();
-            }
-            if (e.NewValue is ObservableCollection<Point> newCollection)
-            {
-                newCollection.CollectionChanged += Value_CollectionChanged;
-                if (newCollection.Count > 0)
+                if (e.NewValue is double[] newValues)
                 {
-                    PlotPoints(newCollection.ToList());
+                    plot.Plot.Clear();
+                    plot.Plot.Add.Signal(newValues);
+                    plot.Refresh();
                 }
             }
         }
-
-        private static void PreparePlot()
-        {
-            _staticPlot!.Reset();
-            _staticPlot.Plot.XLabel("Pixel");
-            _staticPlot.Plot.YLabel("Intensity");
-        }
-
-        private static void PlotPoints(List<Point> collection)
-        {
-            double[] xArray = collection.Select(p => p.X).ToArray();
-            double[] yArray = collection.Select(p => p.Y).ToArray();
-
-            if (_staticPlot != null)
-            {
-                _staticPlot.Plot.Legend();
-                _thePlot = _staticPlot.Plot.AddScatter(xArray, yArray);
-                _staticPlot.Refresh();
-                _staticPlot.Render();
-            }
-        }
-
-        private static void OnExtentsChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        {
-            if (d is not WpfPlot plot) return;
-
-            _staticPlot = plot;
-            if (e.NewValue is Point pt)
-            {
-                SetPlotSize(pt.X, pt.Y);
-                _numPoints = (int)pt.X;
-            }
-        }
-
-        private static void SetPlotSize(double x, double y)
-        {
-            _staticPlot?.Plot.SetAxisLimitsX(0, x);
-            _staticPlot?.Plot.SetAxisLimitsY(0, y);
-        }
-
-        public static void SetExtents(WpfPlot element, Point value)
-        {
-            element.SetValue(ExtentsProperty, value);
-        }
-
-        public static Point GetExtents(WpfPlot element)
-        {
-            return (Point)element.GetValue(ExtentsProperty);
-        }
-
-        private static void UpdatePlot()
-        {
-            if (_staticPlot == null) return;
-
-            if (_thePlot != null)
-            {
-                //convert points collection to array and update plot.
-                double[] xArray = _points.Select(p => p.X).ToArray();
-                double[] yArray = _points.Select(p => p.Y).ToArray();
-                _thePlot.Update(xArray, yArray);
-            }
-            else
-                PlotPoints(_points);
-
-            _staticPlot.Refresh();
-        }
     }
+
 }
