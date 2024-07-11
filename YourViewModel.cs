@@ -37,8 +37,8 @@ namespace ScottPlotV5MVVMDemo
 
         public YourViewModel()
         {
-            values = new double[25];
-            moreValues = new double[25];
+            values = new double[640];
+            moreValues = new double[640];
             timer = new DispatcherTimer
             {
                 Interval = TimeSpan.FromMilliseconds(100)

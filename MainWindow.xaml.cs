@@ -20,7 +20,7 @@ namespace ScottPlotV5MVVMDemo
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly double[] Values = new double[25];
+        private readonly double[] Values = new double[640];
         private readonly Stopwatch stopwatch = new Stopwatch();
         private DispatcherTimer? Timer1 = new();
         public MainWindow()
