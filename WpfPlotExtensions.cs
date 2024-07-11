@@ -34,6 +34,8 @@ namespace ScottPlotV4MVVMDemo
         private static int _numPoints;
         private static ScatterPlot? _thePlot;
 
+        private static readonly Stopwatch _stopwatch = new Stopwatch();
+
         public static void SetItemsSource(WpfPlot element, ObservableCollection<Point> value)
         {
             Trace.WriteLine("SetItemsSource");
@@ -59,7 +61,12 @@ namespace ScottPlotV4MVVMDemo
                 _points.Add(point);
                 if (_points.Count == 640)
                 {
+                    _stopwatch.Restart();
                     UpdatePlot();
+                    _stopwatch.Stop();
+                    double renderTime = _stopwatch.Elapsed.TotalMilliseconds;
+                    double fps = 1000 / renderTime;
+                    Trace.WriteLine($"Plot updated in {renderTime} ms ({fps:F2} FPS)");
                 }
             }
         }

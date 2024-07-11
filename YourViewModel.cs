@@ -19,6 +19,7 @@ namespace ScottPlotV4MVVMDemo
 
         private DispatcherTimer _timer;
         private readonly Random _random = new Random();
+        private readonly Stopwatch _stopwatch = new Stopwatch();
 
         public YourViewModel()
         {
@@ -29,7 +30,7 @@ namespace ScottPlotV4MVVMDemo
         {
             _timer = new DispatcherTimer
             {
-                Interval = TimeSpan.FromMilliseconds(1000 / 30) // 30 Hz
+                Interval = TimeSpan.FromMilliseconds(1000 / 100) // 100 Hz
             };
             _timer.Tick += TimerTick;
             _timer.Start();
@@ -37,7 +38,12 @@ namespace ScottPlotV4MVVMDemo
 
         private void TimerTick(object? sender, EventArgs e)
         {
+            _stopwatch.Restart();
             RandomPoints();
+            _stopwatch.Stop();
+            double renderTime = _stopwatch.Elapsed.TotalMilliseconds;
+            double fps = 1000 / renderTime;
+            Trace.WriteLine($"Frame rendered in {renderTime} ms ({fps:F2} FPS)");
             _iterationCount++;
             if (_iterationCount >= maxIterations)
             {
